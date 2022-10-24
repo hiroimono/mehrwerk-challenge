@@ -1,0 +1,11 @@
+{
+    "compile-hero.disable-compile-files-on-did-save-code": true,
+    "terminal.explorerKind": "integrated",
+    "editor.formatOnSave": true,
+    "html.format.indentInnerHtml": true,
+    "html.format.templating": true,
+    "html.format.indentHandlebars": true,
+    "prettier.jsxSingleQuote": true,
+    "prettier.bracketSameLine": true,
+    "prettier.singleAttributePerLine": true
+}
