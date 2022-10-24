@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-// import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import axios from "axios";
 
 /** Components */
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import HomeScreen from '../screens/_HomeScreen';
+import ShopDetailScreen from "../screens/ShopDetailScreen";
 
 /** Types */
 import { Shop, Shops, Token } from "../types";
-
-/** Styles */
-import './App.css'
 
 axios.defaults.headers.common['X-API-KEY'] = 'lQeUjTylHDCxqfISyZ05C7m1rov3hEZLYAqO42zs7h1fPBL2RF'
 const tokenConfiguration = {
@@ -37,11 +35,12 @@ function App() {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
             } catch (error) {
                 console.log('Error while getting Token. \nerror: ', error);
+            } finally {
+                setLoading(false);
             }
         }
 
         getToken();
-        setLoading(false);
     }, [])
 
     useEffect(() => {
@@ -54,8 +53,9 @@ function App() {
                 }
             } catch (error) {
                 console.log('Error while getting Shops. \nerror: ', error);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         }
 
         if (token) {
@@ -67,7 +67,12 @@ function App() {
     return (
         <main id='main'>
             <Header />
-            <HomeScreen loading={loading} shops={shops} />
+            <Router>
+                <Routes>
+                    <Route path="/" element={<HomeScreen loading={loading} shops={shops} />} />
+                    <Route path="/shops/:id" element={<ShopDetailScreen />} />
+                </Routes>
+            </Router>
             <Footer />
         </main>
     );

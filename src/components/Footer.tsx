@@ -1,8 +1,17 @@
-type Props = {}
+/** Styles */
+import { Container, Row, Col } from 'react-bootstrap';
 
-const Footer = (props: Props) => {
+const Footer = () => {
     return (
-        <div>Footer</div>
+        <footer>
+            <Container>
+                <Row>
+                    <Col className='text-center py-3'>
+                        Copyright&copy; Hüseyin Eltutan
+                    </Col>
+                </Row>
+            </Container>
+        </footer>
     )
 }
 

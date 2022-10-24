@@ -11,3 +11,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#main{
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+
+    grid-template-columns: 100vw;
+    grid-template-rows: 100px 1fr 60px;
+}
+
+.shopCardHeader{
+    height: 55px;
+}
+
+.shopCardFooter{
+    height: 56px;
+}
+
+.shopCardBody{
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.shopCardImg{
+    height: 100px;
+    object-fit: scale-down;
+}
+
+.shopCardText{
+    overflow-y: auto;
+}
