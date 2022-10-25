@@ -70,7 +70,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<HomeScreen loading={loading} shops={shops} />} />
-                    <Route path="/shops/:id" element={<ShopDetailScreen />} />
+                    <Route path="/shops/:id" element={<ShopDetailScreen tokenComing={token} />} />
                 </Routes>
             </Router>
             <Footer />
