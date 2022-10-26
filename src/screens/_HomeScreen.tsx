@@ -6,7 +6,7 @@ import Loader from "../components/Loader"
 import ShopCard from "../components/ShopCard"
 
 /** Bootstrap */
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 
 type IHomeScreenProps = {
 	loading: boolean,
@@ -15,7 +15,7 @@ type IHomeScreenProps = {
 
 const _HomeScreen: FunctionComponent<IHomeScreenProps> = ({ loading, shops }) => {
 	return (
-		<Container>
+		<>
 			{
 				loading ? (
 					<Loader />
@@ -32,7 +32,7 @@ const _HomeScreen: FunctionComponent<IHomeScreenProps> = ({ loading, shops }) =>
 
 				)
 			}
-		</Container>
+		</>
 	)
 }
 

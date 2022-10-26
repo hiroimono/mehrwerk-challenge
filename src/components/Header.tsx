@@ -1,5 +1,5 @@
 /** Styles */
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 type Props = {}
 
 const Header = (props: Props) => {

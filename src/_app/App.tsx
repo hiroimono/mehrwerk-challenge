@@ -7,9 +7,13 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import HomeScreen from '../screens/_HomeScreen';
 import ShopDetailScreen from "../screens/ShopDetailScreen";
+import Message from "../components/Message";
 
 /** Types */
 import { Shop, Shops, Token } from "../types";
+
+/** Bootstrap */
+import { Container } from 'react-bootstrap';
 
 axios.defaults.headers.common['X-API-KEY'] = 'lQeUjTylHDCxqfISyZ05C7m1rov3hEZLYAqO42zs7h1fPBL2RF'
 const tokenConfiguration = {
@@ -22,6 +26,8 @@ function App() {
     const [token, setToken] = useState<string | undefined>(undefined)
     const [shops, setShops] = useState<Shop[] | undefined>([])
     const [loading, setLoading] = useState<boolean>(false)
+    const [error, setError] = useState<boolean>(false)
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     useEffect(() => {
         setLoading(true);
@@ -33,8 +39,11 @@ function App() {
                     setToken(data.access_token);
 
                 axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-            } catch (error) {
-                console.log('Error while getting Token. \nerror: ', error);
+            } catch (error: any) {
+                console.log('Error while getting Token. \nerror: ', error.message);
+
+                setError(true);
+                setErrorMessage(error.message);
             } finally {
                 setLoading(false);
             }
@@ -51,8 +60,10 @@ function App() {
                 if (data) {
                     setShops(data.items);
                 }
-            } catch (error) {
-                console.log('Error while getting Shops. \nerror: ', error);
+            } catch (error: any) {
+                console.log('Error while getting Shops. \nerror: ', error.message);
+                setError(true);
+                setErrorMessage(error.message);
             } finally {
                 setLoading(false);
             }
@@ -67,12 +78,22 @@ function App() {
     return (
         <main id='main'>
             <Header />
-            <Router>
-                <Routes>
-                    <Route path="/" element={<HomeScreen loading={loading} shops={shops} />} />
-                    <Route path="/shops/:id" element={<ShopDetailScreen tokenComing={token} />} />
-                </Routes>
-            </Router>
+            <Container>
+                {
+                    error ? (
+                        <Message variant='danger'>{errorMessage}</Message>
+                    ) : (
+                        <>
+                            <Router>
+                                <Routes>
+                                    <Route path="/" element={<HomeScreen loading={loading} shops={shops} />} />
+                                    <Route path="/shops/:id" element={<ShopDetailScreen tokenComing={token} />} />
+                                </Routes>
+                            </Router>
+                        </>
+                    )
+                }
+            </Container>
             <Footer />
         </main>
     );
