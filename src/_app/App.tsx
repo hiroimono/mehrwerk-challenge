@@ -21,11 +21,11 @@ import { setLocal, getLocal, removeLocal } from '../localStorage';
 /** Secrets */
 import secrets from '../.secrets.js'
 
-axios.defaults.headers.common['X-API-KEY'] = secrets.X_API_KEY
+axios.defaults.headers.common['X-API-KEY'] = process.env.X_API_KEY ?? secrets.X_API_KEY
 const tokenConfiguration = {
-    "client_id": secrets.CLIENT_ID,
-    "client_secret": secrets.CLIENT_SECRET,
-    "grant_type": secrets.GRANT_TYPE
+    "client_id": process.env.CLIENT_ID ?? secrets.CLIENT_ID,
+    "client_secret": process.env.CLIENT_SECRET ?? secrets.CLIENT_SECRET,
+    "grant_type": process.env.GRANT_TYPE ?? secrets.GRANT_TYPE
 }
 
 function App() {
