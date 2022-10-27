@@ -15,6 +15,9 @@ import { Shop, Shops, Token } from "../types";
 /** Bootstrap */
 import { Container } from 'react-bootstrap';
 
+/** Local Storage */
+import { setLocal, getLocal, removeLocal } from '../localStorage';
+
 axios.defaults.headers.common['X-API-KEY'] = 'lQeUjTylHDCxqfISyZ05C7m1rov3hEZLYAqO42zs7h1fPBL2RF'
 const tokenConfiguration = {
     "client_id": "bewerber",
@@ -23,53 +26,70 @@ const tokenConfiguration = {
 }
 
 function App() {
-    const [token, setToken] = useState<string | undefined>(undefined)
+    const [token, setToken] = useState<string | null | undefined>(null)
     const [shops, setShops] = useState<Shop[] | undefined>([])
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>('')
 
-    useEffect(() => {
+    const getToken = async () => {
         setLoading(true);
-        const getToken = async () => {
-            try {
-                const { data } = await axios.post<Token>('https://testapi.mehrwerk.de/v2/iam/oauth/token', tokenConfiguration)
+        try {
+            const { data } = await axios.post<Token>('https://testapi.mehrwerk.de/v2/iam/oauth/token', tokenConfiguration)
 
-                if (data?.access_token)
-                    setToken(data.access_token);
-
+            if (data?.access_token) {
+                setToken(data.access_token);
+                setLocal('token', data.access_token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-            } catch (error: any) {
-                console.log('Error while getting Token. \nerror: ', error.message);
-
-                setError(true);
-                setErrorMessage(error.message);
-            } finally {
-                setLoading(false);
+            } else {
+                throw new Error('Token could not get!')
             }
-        }
 
-        getToken();
+        } catch (error: any) {
+            console.log('Error while getting Token. \nerror: ', error.message);
+            setError(true);
+            setErrorMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const getShops = async () => {
+        setLoading(true);
+        try {
+            const { data } = await axios.get<Shops>('https://testapi.mehrwerk.de/v3/cashback/shops')
+            if (data) {
+                setShops(data.items);
+            }
+        } catch (error: any) {
+            console.log('Error while getting Shops. \nerror: ', error);
+
+            if (error.code === '401') {
+                setToken(null)
+                removeLocal('token')
+            };
+            setError(true);
+            setErrorMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        const tokenLocal = getLocal('token')
+
+        if (!tokenLocal) {
+            getToken();
+        } else {
+            setToken(tokenLocal);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${tokenLocal}`
+        }
     }, [])
 
     useEffect(() => {
-        setLoading(true);
-        const getShops = async () => {
-            try {
-                const { data } = await axios.get<Shops>('https://testapi.mehrwerk.de/v3/cashback/shops')
-                if (data) {
-                    setShops(data.items);
-                }
-            } catch (error: any) {
-                console.log('Error while getting Shops. \nerror: ', error.message);
-                setError(true);
-                setErrorMessage(error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        if (token) {
+        if (!token) {
+            getToken();
+        } else {
             getShops();
         }
     }, [token])

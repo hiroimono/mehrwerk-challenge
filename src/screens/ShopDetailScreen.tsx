@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { Link } from 'react-router-dom';
+import axios from "axios";
 
 /** Types */
 import { Shop, Token } from "../types";
 
-// bootstrap
+/** bootstrap */
 import { Row, Col, ListGroup, Card } from 'react-bootstrap';
+
+/** Local Storage */
+import { setLocal, removeLocal } from '../localStorage';
 
 /** Components */
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
 type Props = {
-    tokenComing: string | undefined
+    tokenComing: string | null | undefined
 }
 
 const tokenConfiguration = {
@@ -32,23 +35,28 @@ const ShopDetailScreen = ({ tokenComing }: Props) => {
     const [error, setError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>('')
 
+    const getToken = async () => {
+        setLoading(true);
+        try {
+            const { data } = await axios.post<Token>('https://testapi.mehrwerk.de/v2/iam/oauth/token', tokenConfiguration)
+
+            if (data?.access_token) {
+                setLocal('token', data.access_token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
+            } else {
+                throw new Error('Token could not get!')
+            }
+        } catch (error: any) {
+            console.log('Error while getting Token. \nerror: ', error.message);
+            setError(true);
+            setErrorMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         if (!tokenComing) {
-            const getToken = async () => {
-                try {
-                    const { data } = await axios.post<Token>('https://testapi.mehrwerk.de/v2/iam/oauth/token', tokenConfiguration)
-
-                    if (data?.access_token)
-                        axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-                } catch (error: any) {
-                    console.log('Error while getting Token. \nerror: ', error.message);
-                    setError(true);
-                    setErrorMessage(error.message);
-                } finally {
-                    setLoading(false);
-                }
-            }
-
             getToken();
         } else {
             axios.defaults.headers.common['Authorization'] = `Bearer ${tokenComing}`
@@ -56,15 +64,20 @@ const ShopDetailScreen = ({ tokenComing }: Props) => {
     }, [tokenComing])
 
     useEffect(() => {
-        setLoading(true);
         const getShop = async () => {
+            setLoading(true);
             try {
                 const { data } = await axios.get<Shop>(`https://testapi.mehrwerk.de/v3/cashback/shops/${shopId}`)
+
                 if (data) {
                     setShop(data);
                 }
             } catch (error: any) {
                 console.log('Error while getting Shop. \nerror: ', error.message);
+
+                if (error.code === '401') {
+                    removeLocal('token')
+                };
                 setError(true);
                 setErrorMessage(error.message);
             } finally {
