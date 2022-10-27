@@ -18,11 +18,14 @@ import { Container } from 'react-bootstrap';
 /** Local Storage */
 import { setLocal, getLocal, removeLocal } from '../localStorage';
 
-axios.defaults.headers.common['X-API-KEY'] = 'lQeUjTylHDCxqfISyZ05C7m1rov3hEZLYAqO42zs7h1fPBL2RF'
+/** Secrets */
+import secrets from '../.secrets.js'
+
+axios.defaults.headers.common['X-API-KEY'] = secrets.X_API_KEY
 const tokenConfiguration = {
-    "client_id": "bewerber",
-    "client_secret": "hj52Ws4kF",
-    "grant_type": "client_credentials"
+    "client_id": secrets.CLIENT_ID,
+    "client_secret": secrets.CLIENT_SECRET,
+    "grant_type": secrets.GRANT_TYPE
 }
 
 function App() {
