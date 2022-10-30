@@ -7,7 +7,7 @@ const Header = (props: Props) => {
         <header>
             <Navbar bg="dark" fixed="top" variant="dark" expand="md" collapseOnSelect>
                 <Navbar.Brand>
-                    <span className="display-4">
+                    <span className="headerText">
                         Mehrwerk Challenge
                     </span>
                 </Navbar.Brand>
