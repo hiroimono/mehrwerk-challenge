@@ -67,10 +67,8 @@ function App() {
         } catch (error: any) {
             console.log('Error while getting Shops. \nerror: ', error);
 
-            if (error.code === '401') {
-                setToken(null)
-                removeLocal('token')
-            };
+            setToken(null);
+            removeLocal('token');
             setError(true);
             setErrorMessage(error.message);
         } finally {
